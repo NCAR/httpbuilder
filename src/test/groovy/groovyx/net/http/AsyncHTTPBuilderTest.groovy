@@ -78,7 +78,7 @@ public class AsyncHTTPBuilderTest {
     @Ignore
     @Test public void testDefaultConstructor() {
         def http = new AsyncHTTPBuilder()
-        def resp = http.get( uri:'http://ajax.googleapis.com',
+        def resp = http.get( uri:'https://ajax.googleapis.com',
                     path : '/ajax/services/search/web',
                     query : [ v:'1.0', q: 'Calvin and Hobbes' ],
                     contentType: JSON )
@@ -89,6 +89,7 @@ public class AsyncHTTPBuilderTest {
         http.shutdown()
     }
 
+    @Ignore // requires auth; 404 entire site
     @Test public void testPostAndDelete() {
         def http = new AsyncHTTPBuilder(uri:'https://api.twitter.com/1.1/statuses/')
 
@@ -126,6 +127,7 @@ public class AsyncHTTPBuilderTest {
     }
 
 
+    @Ignore // 404
     @Test public void testTimeout() {
         def http = new AsyncHTTPBuilder( uri:'http://netflix.com',
                 contentType: HTML, timeout:2 ) // 2ms to force timeout
@@ -145,9 +147,10 @@ public class AsyncHTTPBuilderTest {
         }
     }
 
+    @Ignore // 404 dead service
     @Test public void testPoolsizeAndQueueing() {
         def http = new AsyncHTTPBuilder( poolSize : 1 ,
-                uri : 'http://ajax.googleapis.com/ajax/services/search/web' )
+                uri : 'https://ajax.googleapis.com/ajax/services/search/web' )
 
         def responses = []
         /* With one thread in the pool, responses will be sequential but should
@@ -172,7 +175,7 @@ public class AsyncHTTPBuilderTest {
     @Test public void testInvalidNamedArg() {
         try {
             def http = new AsyncHTTPBuilder( poolsize : 1 ,
-                uri : 'http://ajax.googleapis.com/ajax/services/search/web' )
+                uri : 'https://ajax.googleapis.com/ajax/services/search/web' )
             throw new AssertionError("request should have failed due to invalid kwarg.")
         }
         catch ( IllegalArgumentException ex ) { /* Expected result */ }

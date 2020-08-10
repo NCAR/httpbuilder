@@ -19,7 +19,7 @@ class HttpURLClientTest {
      * This method will parse the content based on the response content-type
      */
     @Test public void testGET() {
-        def http = new HttpURLClient(url:'http://www.google.com')
+        def http = new HttpURLClient(url:'https://www.google.com')
         def resp = http.request( path:'/search', query:[q:'HTTPBuilder'],
                 headers:['User-Agent':'Firefox'] )
 
@@ -52,7 +52,7 @@ class HttpURLClientTest {
     }
 
     @Test public void testSetHeaders() {
-        def http = new HttpURLClient(url:'http://www.google.com')
+        def http = new HttpURLClient(url:'https://www.google.com')
         def val = '1'
         def v2 = 'two'
         def h3 = 'three'
@@ -73,7 +73,7 @@ class HttpURLClientTest {
 
 
     @Test public void testFailure() {
-        def http = new HttpURLClient(url:'http://www.google.com')
+        def http = new HttpURLClient(url:'https://www.google.com')
 
         try {
             def resp = http.request( path:'/adsasf/kjsslkd' )
@@ -83,7 +83,7 @@ class HttpURLClientTest {
             assert ! ex.response.success
             assert ex.response.headers.every { it.name && it.value }
         }
-        assert http.url.toString() == 'http://www.google.com'
+        assert http.url.toString() == 'https://www.google.com'
     }
 
     /**
@@ -92,8 +92,13 @@ class HttpURLClientTest {
      */
     @Test public void testReader() {
         def http = new HttpURLClient()
-        def resp = http.request( url:'http://validator.w3.org/about.html',
-                  contentType: TEXT, headers: [Accept:'*/*'] )
+        def resp = http.request( url:
+                //'http://validator.w3.org/about.html' // fails validation by twice using "&ouml;": The entity "ouml" was referenced, but not declared.
+                //'http://validator.w3.org/docs/help.html' // fails &ouml; &mdash;
+                //'https://validator.w3.org/nu/about.html'
+                'https://www.w3schools.com/xml/cd_catalog.xml'
+                ,
+            contentType: TEXT, headers: [Accept:'*/*'] )
 
         println "response status: ${resp.statusLine}"
 
@@ -108,20 +113,21 @@ class HttpURLClientTest {
 
     /** W3C pages will have a doctype, but will return a 503 if you do a GET
      * for them with the Java User-Agent.
+     * ...and they all fail validation (see above)
      */
     @Test public void testCatalog() {
         def http = new HttpURLClient(
-                url:'http://validator.w3.org/',
+                url:'https://www.w3schools.com',
                 contentType: XML )
 
-        def resp = http.request( path : 'about.html' )
+        def resp = http.request( path : '/xml/note.xml' )
         assert resp.data
     }
 
     /* REST testing with Twitter!
      * Tests POST with XML response, and DELETE with a JSON response.
      */
-
+    @Ignore // requires auth; 404 entire site
     @Test public void testPOST() {
         def http = new HttpURLClient(url:'https://api.twitter.com/1.1/statuses/')
 
@@ -153,8 +159,8 @@ class HttpURLClientTest {
         println "Test tweet ID ${json.id} was deleted."
     }
 
-//  @Test
-    public void testHeadMethod() {
+    @Ignore // requires auth; 404 entire site
+    @Test public void testHeadMethod() {
         def http = new HttpURLClient(url:'http://api.twitter.com/1/statuses/')
 
         assert http.url.toString() == "http://api.twitter.com/1/statuses/"
@@ -168,6 +174,7 @@ class HttpURLClientTest {
         assert resp.headers.Status == "200 OK"
     }
 
+    @Ignore // requires auth; 404 entire site
     @Test public void testParsers() {
         def parsers = new ParserRegistry()
         def done = false
@@ -193,15 +200,15 @@ class HttpURLClientTest {
         assert resp.data
     }
 
-    /* http://googlesystem.blogspot.com/2008/04/google-search-rest-api.html
-     * http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=Earth%20Day
+    /* https://googlesystem.blogspot.com/2008/04/google-search-rest-api.html
+     * https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=Earth%20Day
      */
     @Ignore
     @Test public void testJSON() {
 
         def http = new HttpURLClient()
 
-        def resp = http.request( url:'http://ajax.googleapis.com',
+        def resp = http.request( url:'https://ajax.googleapis.com',
                 method:GET, contentType:JSON ,
             path : '/ajax/services/search/web',
             query : [ v:'1.0', q: 'Calvin and Hobbes' ],
@@ -222,7 +229,7 @@ class HttpURLClientTest {
         def http = new HttpURLClient()
 
         try {
-            def resp = http.request( url:'http://ajax.googleapis.com',
+            def resp = http.request( url:'https://ajax.googleapis.com',
                     method:GET, contentType:JSON ,
                 Path : '/ajax/services/search/web',
                 query : [ v:'1.0', q: 'Calvin and Hobbes' ] )
@@ -233,6 +240,6 @@ class HttpURLClientTest {
 
     @Test(expected = SocketTimeoutException)
     void testTimeout() {
-        new HttpURLClient(url: 'https://www.google.com/').request(timeout: 1)
+        new HttpURLClient(url: 'https://groovy-lang.org/').request(timeout: 1)
     }
 }
