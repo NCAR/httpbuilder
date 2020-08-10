@@ -1,5 +1,38 @@
 HTTPBuilder = Easy HTTP client for Groovy.
 
+Versions:
+
+The original project was abandoned after release 0.7.2
+(and that version has come and gone from the public repositories).
+Fork based on 0.7.3-SNAPSHOT (same code as release 0.7.2).
+This clone uses version numbers like "0.99.x-SNAPSHOT".
+
+0.99.1
+- merge original PRs #85 #78 #88 #32 #64
+- fix tests (ignore broken websites)
+
+TODO:
+- better tests, using a locally running test http(s) server
+- fix javadoc comments so the build completes
+
+Local repo deployment:
+
+An easy way to deploy to your local Maven remote repository is:
+
+    mvn -Dmaven.javadoc.skip=true -DskipTests \
+    -DaltDeploymentRepository=internalMaven::default::file:///PATH/TO/MY/LOCAL/maven2 \
+    deploy
+
+You can also deploy the built JAR directly.
+Be sure to update the url, file, and version settings as appropriate.
+
+    mvn deploy:deploy-file -Dpackaging=jar \
+    -DgroupId=org.codehaus.groovy.modules.http-builder -DartifactId=http-builder \
+    -Durl=file:///PATH/TO/MY/LOCAL/maven2 \
+    -Dfile=target/http-builder-0.99.1-SNAPSHOT.jar \
+    -Dversion=0.99.1-SNAPSHOT
+
+
 Build Instructions:
 
  HTTPBuilder is built using Apache Maven (http://maven.apache.org)
