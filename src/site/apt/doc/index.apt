@@ -92,7 +92,7 @@ The Magic: Built-in Content-Type Parsing
 
   Probably the quickest way to debug is to turn on logging for HTTPBuilder and
   Apache HttpClient.  An example
-  {{{https://svn.codehaus.org/gmod/httpbuilder/trunk/src/test/resources/log4j.xml}
+  {{{https://github.com/jgritman/httpbuilder/blob/master/src/test/resources/log4j.xml}
   log4j configuration}} can be used to output headers and request/response
   content, as well as additional information on what HTTPBuilder is doing with
   the request and response.

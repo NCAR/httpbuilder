@@ -98,13 +98,13 @@ public class URIBuilderTest {
         def uri = new URIBuilder( 'http://johannburkard.de/%22bla%22' )
         uri.query = [ what_is_this: 'i_dont_even' ]
 
-        uri = new URIBuilder( 'http://codehaus.org/')
+        uri = new URIBuilder( 'http://groovy-lang.org/')
         uri.path = '"bla"'
 
         uri.fragment = 'what evs'
-        assert uri.toString() == 'http://codehaus.org/%22bla%22#what%20evs'
+        assert uri.toString() == 'http://groovy-lang.org/%22bla%22#what%20evs'
         uri.query = [ a: 'b#' ]
-        assert uri.toString() == 'http://codehaus.org/%22bla%22?a=b%23#what%20evs'
+        assert uri.toString() == 'http://groovy-lang.org/%22bla%22?a=b%23#what%20evs'
         uri.port = 80
         uri.host = 'google.com'
         uri.scheme = 'https'
