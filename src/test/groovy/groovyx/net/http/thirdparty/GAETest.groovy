@@ -22,7 +22,7 @@ class GAETest {
     @Ignore
     @Test public void testURLFetchService() {
         http = newBuilder()
-        http.uri = 'http://ajax.googleapis.com/ajax/services/search/web'
+        http.uri = 'https://ajax.googleapis.com/ajax/services/search/web'
         http.request(GET) {
             uri.query = [ v:'1.0', q: 'HTTPBuilder' ]
 
@@ -46,7 +46,7 @@ class GAETest {
      * This method will parse the content based on the response content-type
      */
     @Test public void testGET() {
-        def http = newBuilder('http://www.google.com')
+        def http = newBuilder('https://www.google.com')
         http.get( path:'/search', query:[q:'Groovy'],
                 headers:['User-Agent':"Firefox"] ) { resp, html ->
             println "response status: ${resp.statusLine}"
@@ -61,7 +61,7 @@ class GAETest {
     }
 
     @Test public void testDefaultSuccessHandler() {
-        def http = newBuilder('http://www.google.com')
+        def http = newBuilder('https://www.google.com')
         def html = http.request( GET ) {
             headers = ['User-Agent':"Firefox"]
             uri.path = '/search'
@@ -79,7 +79,7 @@ class GAETest {
     }
 
     @Test public void testSetHeaders() {
-        def http = newBuilder('http://www.google.com')
+        def http = newBuilder('https://www.google.com')
         def val = '1'
         def v2 = 'two'
         def h3 = 'three'
@@ -114,7 +114,7 @@ class GAETest {
      * TEXT or BINARY.
      */
     @Test public void testReaderWithDefaultResponseHandler() {
-        def http = newBuilder('http://www.google.com')
+        def http = newBuilder('https://www.google.com')
 
         def reader = http.get( contentType:TEXT )
 
@@ -127,7 +127,7 @@ class GAETest {
     }
 
     @Test public void testDefaultFailureHandler() {
-        def http = newBuilder('http://www.google.com')
+        def http = newBuilder('https://www.google.com')
 
         try {
             http.get( path:'/adsasf/kjsslkd' ) {
@@ -147,8 +147,8 @@ class GAETest {
      * based on the given content-type, i.e. TEXT (text/plain).
      */
     @Test public void testReader() {
-        def http = newBuilder('http://examples.oreilly.com')
-        http.get( uri:'http://examples.oreilly.com/9780596002527/examples/first.xml',
+        def http = newBuilder('https://resources.oreilly.com')
+        http.get( uri:'https://resources.oreilly.com/examples/9780596002527/raw/master/examples/first.xml',
                   contentType: TEXT, headers: [Accept:'*/*'] ) { resp, reader ->
             println "response status: ${resp.statusLine}"
             println 'Headers:'
@@ -172,6 +172,7 @@ class GAETest {
      * Tests POST with XML response, and DELETE with a JSON response.
      */
 
+    @Ignore // 404 entire site
     @Test public void testPOST() {
         def http = newBuilder('https://api.twitter.com/1.1/statuses/')
 
@@ -231,8 +232,8 @@ class GAETest {
         }
     }
 
-//  @Test
-    public void testHeadMethod() {
+    @Ignore // 404 entire site
+    @Test public void testHeadMethod() {
         def http = newBuilder('https://api.twitter.com/1.1/statuses/')
 
         http.auth.oauth twitter.consumerKey, twitter.consumerSecret,
@@ -262,7 +263,7 @@ class GAETest {
         }
 
 //       optional default URL for all actions:
-        http.uri = 'http://www.google.com'
+        http.uri = 'https://www.google.com'
 
         http.request(GET,TEXT) { req ->
             response.success = { resp, stream ->
@@ -278,7 +279,7 @@ class GAETest {
      * Test a response handler that is assigned within a request config closure:
      */
     @Test public void test404() {
-        newBuilder().request('http://www.google.com',GET,TEXT) {
+        newBuilder().request('https://www.google.com',GET,TEXT) {
             uri.path = '/asdfg/asasdfs' // should produce 404
             response.'404' = {
                 println 'got expected 404!'
@@ -289,8 +290,8 @@ class GAETest {
         }
     }
 
-    /* http://googlesystem.blogspot.com/2008/04/google-search-rest-api.html
-     * http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=Earth%20Day
+    /* https://googlesystem.blogspot.com/2008/04/google-search-rest-api.html
+     * https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=Earth%20Day
      */
     @Ignore
     @Test public void testJSON() {
@@ -299,7 +300,7 @@ class GAETest {
 
 //      builder.parser.'text/javascript' = builder.parsers."$JSON"
 
-        builder.request('http://ajax.googleapis.com',GET,JSON) {
+        builder.request('https://ajax.googleapis.com',GET,JSON) {
             uri.path = '/ajax/services/search/web'
             uri.query = [ v:'1.0', q: 'Calvin and Hobbes' ]
             //UA header required to get Google to GZIP response:
@@ -333,22 +334,23 @@ class GAETest {
 
         http.auth.basic( 'user2', 'user2' )
 
+        /* 404 and does NOT do auth
         http.request( GET, HTML ) {
             uri.path = '/auth-digest/'
         }
+        */
 
         http.request( GET, HTML ) {
             uri.path = '/auth-basic/'
         }
     }
 
+    @Ignore // requires auth
     @Test public void testCatalog() {
-        def http = newBuilder( 'http://weather.yahooapis.com/forecastrss' )
+        def http = newBuilder( 'https://weather-ydn-yql.media.yahoo.com/forecastrss' )
 
-        http.parser.addCatalog getClass().getResource( '/rss-catalog.xml')
-        def xml = http.get( query : [p:'02110',u:'f'] )
-
-
+        http.parser.addCatalog getClass().getResource( '/rss-catalog.xml')  // 404
+        def xml = http.get( query : [p:'02110',u:'f'] )  // does not work
     }
 
     def newBuilder( uri ) {
@@ -358,4 +360,5 @@ class GAETest {
             }
         }
     }
+
 }
